@@ -28,15 +28,23 @@
       <div class="collapse navbar-collapse" id="navbarNav">
         <ul class="navbar-nav mr-auto mt-2 mt-lg-0">
           <li class="nav-item">
-            <a class="nav-link" href="#"
-              >Interação <span class="sr-only">(current)</span></a
-            >
-          </li>
-          <li class="nav-item">
-            <a class="nav-link" href="#">Uso Continuo</a>
+            <!-- <a class="nav-link" href="#"> -->
+            <router-link to="/interacao" class="nav-link">
+              Interação
+            </router-link>
+
+            <!-- <span class="sr-only">(current)</span></a
+            > -->
           </li>
           <li class="nav-item active">
-            <a class="nav-link" href="#">Bula</a>
+            <a class="nav-link" href="#">Uso Continuo</a>
+          </li>
+          <li class="nav-item ">
+            <!-- <a class="nav-link" href="#"> -->
+            <router-link to="/bula" class="nav-link">
+              Bula
+            </router-link>
+            <!-- </a> -->
           </li>
         </ul>
         <ul class="navbar-nav my-2 my-lg-0">
@@ -61,27 +69,28 @@
       </div>
     </nav>
     <div>
+      <router-view />
       <!-- <interacao></interacao> -->
-      <bula></bula>
+      <!-- <bula></bula> -->
     </div>
   </div>
 </template>
 
 <script>
-import interacao from "./pages/interacao.vue";
-import bula from "./pages/bula.vue";
+import interacao from "./views/interacao.vue";
+import bula from "./views/bula.vue";
 
 export default {
   name: "app",
   components: {
     interacao,
-    bula,
+    bula
   },
   data() {
     return {
-      msg: "Welcome to Your Vue.js App",
+      msg: "Welcome to Your Vue.js App"
     };
-  },
+  }
 };
 </script>
 
