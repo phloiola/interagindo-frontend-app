@@ -1,132 +1,105 @@
 <template>
   <div id="app">
-    <nav
-      class="navbar navbar-expand-lg navbar-dark"
-      style="background: linear-gradient(to left, #1ac1bb, #007eae, #3a1c71)"
-    >
-      <a class="navbar-brand" href="#">
-        <div>
-          <img
-            src="./assets/logo-white.png"
-            class="d-inline-block align-middle"
-            alt=""
-          />
-          Interagindo
-        </div>
-      </a>
-      <button
-        class="navbar-toggler bg-black"
-        type="button"
-        data-toggle="collapse"
-        data-target="#navbarNav"
-        aria-controls="navbarNav"
-        aria-expanded="false"
-        aria-label="Toggle navigation"
-      >
-        <span class="navbar-toggler-icon"></span>
-      </button>
-      <div class="collapse navbar-collapse" id="navbarNav">
-        <ul class="navbar-nav mr-auto mt-2 mt-lg-0">
-          <li class="nav-item">
-            <!-- <a class="nav-link" href="#"> -->
-            <router-link to="/interacao" class="nav-link">
-              Interação
-            </router-link>
-
-            <!-- <span class="sr-only">(current)</span></a
-            > -->
-          </li>
-          <li class="nav-item active">
-            <a class="nav-link" href="#">Uso Continuo</a>
-          </li>
-          <li class="nav-item ">
-            <!-- <a class="nav-link" href="#"> -->
-            <router-link to="/bula" class="nav-link">
-              Bula
-            </router-link>
-            <!-- </a> -->
-          </li>
-        </ul>
-        <ul class="navbar-nav my-2 my-lg-0">
-          <li class="nav-item dropdown">
-            <a
-              class="nav-link dropdown-toggle"
-              href="#"
-              id="navbarDropdownMenuLink"
-              role="button"
-              data-toggle="dropdown"
-              aria-haspopup="true"
-              aria-expanded="false"
-            >
-              Olá, João!
-            </a>
-            <div class="dropdown-menu" aria-labelledby="navbarDropdownMenuLink">
-              <a class="dropdown-item" href="#">Dados Pessoais</a>
-              <a class="dropdown-item" href="#">Logout</a>
-            </div>
-          </li>
-        </ul>
-      </div>
-    </nav>
     <div>
+      <nav class="nav-extended blue darken-4">
+        <div class="nav-brand">
+          <a href="#" class="brand-logo center alingLogo">
+            <div class="valign-wrapper">
+              <img
+                src="./assets/logo-novo.png"
+                class=""
+                alt=""
+                width="50em"
+                height="44em"
+              />
+              <span>Interagindo</span>
+            </div>
+          </a>
+          <a href="#" data-target="mobile-demo" class="sidenav-trigger"
+            ><i class="material-icons">menu</i></a
+          >
+        </div>
+        <div class="nav-content">
+          <ul class="tabs tabs-transparent tabs-swipe-demo">
+            <li class="tab">
+              <router-link to="/interacao" class="nav-link">
+                Interação
+              </router-link>
+            </li>
+            <li class="tab">
+              <router-link to="/bula" class="nav-link"> Bula </router-link>
+            </li>
+
+            <li class="right hide-on-med-and-down">
+              <profileNav align="desk" />
+            </li>
+          </ul>
+        </div>
+      </nav>
+    </div>
+
+    <ul class="sidenav" id="mobile-demo">
+      <li class="container hide-on-large-only">
+        <profileNav />
+      </li>
+      <li>
+        <router-link to="/interacao" class="nav-link sidenav-close">
+          Interação
+        </router-link>
+      </li>
+      <li>
+        <router-link to="/bula" class="nav-link sidenav-close">
+          Bula
+        </router-link>
+      </li>
+    </ul>
+
+    <div class="container">
       <router-view />
-      <!-- <interacao></interacao> -->
-      <!-- <bula></bula> -->
     </div>
   </div>
 </template>
 
 <script>
-import interacao from "./views/interacao.vue";
-import bula from "./views/bula.vue";
+import M from "materialize-css";
+
+import profileNav from "./components/profileNav.vue";
 
 export default {
   name: "app",
   components: {
-    interacao,
-    bula
+    profileNav
   },
   data() {
     return {
       msg: "Welcome to Your Vue.js App"
     };
+  },
+  mounted() {
+    M.AutoInit();
+    console.log("Passou");
+    // document.addEventListener("DOMContentLoaded", function () {
+    //   var elems = document.querySelectorAll(".sidenav");
+    //   var instances = M.Sidenav.init(elems, options);
+    // });
   }
 };
 </script>
 
 <style>
-img {
-  border-style: none;
-  max-width: 80px;
-  padding: 5px;
+.imgprofile {
+  /* margin-top: 10vh; */
+  border: white solid 2px;
 }
-.full-height {
-  height: calc(100vh - 75px);
-}
-.sidebar-wrapper {
-  position: relative;
-  overflow: auto;
-  width: 260px;
-  padding-bottom: 20px;
-}
-
-.logo {
-  display: flex;
-  vertical-align: middle;
-}
-
-/* Reposanviso */
-@media (max-width: 544px) {
-  .navbar .navbar-nav > .nav-item {
-    float: none;
-    margin-left: 0.1rem;
+@media screen and (min-width: 993px) {
+  .alingLogo {
+    margin-top: -0.25em;
   }
-  .navbar .navbar-nav {
-    float: none !important;
-  }
-  .navbar .collapse.in,
-  .navbar .collapsing {
-    clear: both;
-  }
+}
+.alingLogo span {
+  padding-left: 0.2em;
+}
+.teste {
+  border: white solid 2px;
 }
 </style>
