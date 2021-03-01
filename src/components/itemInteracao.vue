@@ -1,84 +1,196 @@
 <template>
-  <li class="collection-item avatar col s12 m12 listmed">
-    <i class="material-icons hide"></i>
+  <li class="listInt ">
+    <div class="collapsible-header clear lowrisk waves-effect waves-brown">
+      <i class="material-icons yellow-text alteraIcon">warning</i>
 
-    <div class="teste2">
-      <div class="teste" ref="q">
-        <!-- <p class="title truncate scrolling"> -->
-        <p v-bind:class="setClassScroll()" ref="p">
-          {{ dados.nome }}
-        </p>
+      <div class="row clearSpace">
+        <table class="col s12 m12 l12 xl12">
+          <thead>
+            <tr>
+              <th class="limpaTable center teste45">
+                {{ dados.nome_principio_ativo1 }}
+              </th>
+              <th class="limpaTable center teste10">X</th>
+              <th class="limpaTable center teste45">
+                {{ dados.nome_principio_ativo2 }}
+              </th>
+            </tr>
+          </thead>
+
+          <tbody
+            class="collection"
+            v-for="(line, index) in listMed"
+            :key="index"
+          >
+            <tr>
+              <td class="center">{{ line.input_01 }}</td>
+              <td></td>
+              <td class="center">{{ line.input_02 }}</td>
+            </tr>
+          </tbody>
+        </table>
+
+        <p class="col s12 m12 l12 center">Ler mais</p>
       </div>
     </div>
 
-    <p>{{ dados.tipo }}</p>
-    <a href="#" class="secondary-content">
-      <i class="material-icons red-text text-darken-4">remove_circle</i></a
-    >
-    <hr />
+    <div class="collapsible-body row title-div">
+      <span class="title col s12">Efeito da interação</span>
+      <div class="col s12">
+        {{ dados.efeito_intera }}
+      </div>
+      <span class="title col s12">Grau da interação</span>
+      <div class="col s12">
+        {{ dados.grau_intera }}
+      </div>
+      <span class="title col s12">Início da interação</span>
+      <div class="col s12">
+        {{ dados.inicio_intera }}
+      </div>
+      <span class="title col s12">Referêcia</span>
+      <div class="col s12">
+        {{ dados.referencia }}
+      </div>
+      <!-- <span>Lorem ipsum dolor sit amet.</span> -->
+    </div>
   </li>
 </template>
 
 <script>
 export default {
   data() {
-    return {
-      widthimg: "40vh"
-    };
+    return {};
   },
   props: {
     dados: Object
   },
-  methods: {
-    setClassScroll: function() {
-      let css = { title: true, truncate: true, scrolling: false };
-      // var boxWidth = $(this).width();
-      // var textWidth = $(".scroll", $(this)).width();
-      // console.log(this);
-      // console.log(e);
-      // let boxWidth = this.$el;
-      // let textWidth = $(".scrolling", $(this)).width();
-
-      // console.log(boxWidth);
-      // console.log(textWidth);
-      return css;
-    },
-    onResize: function() {
-      if (this.$refs.p.scrollWidth > this.$refs.p.offsetWidth) {
-        this.$refs.p.classList.add("scrolling");
-      } else {
-        this.$refs.p.classList.remove("scrolling");
-      }
-    }
-  },
+  methods: {},
   mounted() {
-    // Monitora mudança no tamanho da tela
-    window.addEventListener("resize", this.onResize);
-    this.onResize();
     // if (this.$refs.p.scrollWidth > this.$refs.p.offsetWidth) {
     //   this.$refs.p.classList.add("scrolling");
     // }
+  },
+  computed: {
+    listMed: {
+      get: function() {
+        let input_01_clean = this.dados.inputs_01.filter(line => {
+          if (!!line.nome_med) {
+            return true;
+          } else {
+            return false;
+          }
+        });
+
+        let input_02_clean = this.dados.inputs_02.filter(line => {
+          if (!!line.nome_med) {
+            return true;
+          } else {
+            return false;
+          }
+        });
+
+        if (input_01_clean.length < input_02_clean.length) {
+          let input_02 = this.dados.inputs_02.map((line, i) => {
+            let output = {
+              input_02: line.nome_med
+            };
+
+            if (!!input_01_clean[i]) {
+              output.input_01 = input_01_clean[i].nome_med;
+            } else {
+              output.input_01 = "";
+            }
+
+            return output;
+          });
+          return input_02;
+        } else {
+          let input_01 = this.dados.inputs_01.map((line, i) => {
+            let output = {
+              input_01: line.nome_med
+            };
+
+            if (!!input_02_clean[i]) {
+              output.input_02 = input_02_clean[i].nome_med;
+            } else {
+              output.input_02 = "";
+            }
+
+            return output;
+          });
+          return input_01;
+        }
+      }
+    }
   }
 };
 </script>
 
 <style scoped>
-.teste2 {
-  overflow-x: hidden;
-  overflow-y: hidden;
+.listInt {
+  border: none !important;
+  box-shadow: none !important;
+}
+.collapsible tr {
+  border: none;
+}
+.collapsible td {
+  padding-top: 0px !important;
+  padding-bottom: 0px !important;
+  border: none;
+  box-shadow: 0 1px 0 0 #9a9a9a32 !important;
+}
+.lowrisk {
+  border-bottom: 1px solid #f3ef03 !important;
+  box-shadow: 0 1px 0 0 #f5f242 !important;
+}
+.moderaterisk {
+  border-bottom: 1px solid #daa20a !important;
+  box-shadow: 0 1px 0 0 #f7b03e !important;
+}
+.highrisk {
+  border-bottom: 1px solid #ac0404 !important;
+  box-shadow: 0 1px 0 0 #f00505 !important;
 }
 
-.teste:hover .scrolling {
-  /* This is not completely accurate. It resizes to 2x the current width. */
-  left: -100%;
-  width: 170%;
-  margin-right: 50px;
+.nonerisk {
+  border-bottom: 1px solid #9a9a9a !important;
+  box-shadow: 0 1px 0 0 #9a9a9a !important;
 }
 
-.scrolling {
-  position: relative;
-  left: 0%;
-  width: 85%;
-  transition: left 4s, width 4s ease;
+.limpaTable {
+  border-top: 0px !important;
+  padding-top: 0px !important;
+}
+
+.alteraIcon {
+  padding-top: 10px;
+}
+.clearSpace {
+  padding: 0;
+  margin: 0;
+}
+.clearSpace > p {
+  padding: 0;
+  margin: 0;
+  text-decoration: underline;
+  font-weight: bold;
+}
+
+.collapsible-header.clear {
+  margin-bottom: 20px;
+  padding-top: 5px;
+}
+.collapsible th {
+  padding-bottom: 0px !important;
+}
+.title {
+  font-weight: bold;
+  border-bottom: 1px solid gray;
+  padding-top: 10px;
+}
+
+.title-div {
+  padding-top: 0px !important;
 }
 </style>

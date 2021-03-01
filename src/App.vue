@@ -78,6 +78,13 @@ export default {
   mounted() {
     M.AutoInit();
     console.log("Passou");
+
+    // // Inicializa expanção das interações
+    // document.addEventListener("DOMContentLoaded", function() {
+    //   var elems = document.querySelectorAll(".collapsible");
+    //   var instances = M.Collapsible.init(elems, options);
+    // });
+
     // document.addEventListener("DOMContentLoaded", function () {
     //   var elems = document.querySelectorAll(".sidenav");
     //   var instances = M.Sidenav.init(elems, options);
@@ -101,5 +108,10 @@ export default {
 }
 .teste {
   border: white solid 2px;
+}
+.waves-effect.waves-brown .waves-ripple {
+  /* The alpha value allows the text and background color
+   of the button to still show through. */
+  background-color: rgba(58, 83, 224, 0.65);
 }
 </style>
