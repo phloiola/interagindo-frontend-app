@@ -6,7 +6,18 @@
         <div class="row">
           <div class="input-field col s12">
             <i class="material-icons prefix">search</i>
-            <input type="text" id="autocomplete-input" class="autocomplete" />
+            <input
+              type="text"
+              id="autocomplete-input"
+              class="autocomplete set_relative"
+              :v-model="buscaMedicamento"
+              :value="buscaMedicamento"
+              ref="autocomplete"
+            />
+            <!-- <ul
+              class="autocomplete-content dropdown-content autocompleteCust"
+              tabindex="0"
+            ></ul> -->
             <label for="autocomplete-input"
               >Nome do medicamento ou princípio ativo</label
             >
@@ -18,16 +29,18 @@
     <div class="row">
       <ul class="collection col s12 m6 clear">
         <selectedItem
+          v-for="line in selectedItem"
+          :key="line.id"
           :dados="{
-            nome: 'Medicamentoooooooooooooooooooooo 001',
-            tipo: 'Principio Ativo'
+            nome: line.nome,
+            tipo: line.tipo
           }"
           @eventDelMed="deletaMed($event)"
         />
 
-        <selectedItem
+        <!-- <selectedItem
           :dados="{ nome: 'Medicamento 001', tipo: 'Principio Ativo' }"
-        />
+        /> -->
       </ul>
       <!-- <ul class="collection col s12 m6 clear">
         <itemInteracao
@@ -44,15 +57,20 @@
       </ul> -->
 
       <ul class="collapsible col s12 m6 popout clear">
-        <itemInteracao :dados="dataInt" />
-        <itemInteracao :dados="dataInt" />
-        <itemInteracao :dados="dataInt" />
+        <itemInteracao
+          v-for="(line, index) in selectedItem"
+          :key="index"
+          :dados="dataInt"
+        />
+        <!-- <itemInteracao :dados="dataInt" />
+        <itemInteracao :dados="dataInt" /> -->
       </ul>
     </div>
   </div>
 </template>
 
 <script>
+import axios from "axios";
 import selectedItem from "../components/selectedItem.vue";
 import itemInteracao from "../components/itemInteracao.vue";
 
@@ -66,49 +84,88 @@ export default {
     // columns: Array,
     // data: Array,
   },
+
   data() {
     return {
-      interação: [],
-      dataInt: {
-        _id_pa1: 50,
-        nome_principio_ativo1: "Acido Acetilsalicilico\r",
-        _id_pa2: 375,
-        nome_principio_ativo2: "Captopril\r",
-        grau_intera: "Moderada",
-        inicio_intera: "Não especificado",
-        efeito_intera: "Diminui resposta anti-hipertensiva",
-        recomend_intera: "Monitorar pressão arterial.",
-        referencia:
-          "Guia de interações medicamentosas - Hospital das Clínicas / Universidade Federal de Goiás",
-        inputs_01: [
-          {
-            param: 3,
-            tipo: "Medicamento",
-            nome_med: "Aas\r"
-          }
-        ],
-        inputs_02: [
-          {
-            param: 1210,
-            tipo: "Medicamento",
-            nome_med: "Captopril\r"
-          },
-          {
-            param: 1210,
-            tipo: "Medicamento",
-            nome_med: "Captopril\r"
-          },
-          {
-            param: 1210,
-            tipo: "Medicamento",
-            nome_med: "Captopril\r"
-          }
-        ]
-      }
+      axios: {},
+      listMed: [],
+      listPrin: [],
+      selectedItem: [],
+      buscaMedicamento: ""
+      //   dataInt: {
+      //     _id_pa1: 50,
+      //     nome_principio_ativo1: "Acido Acetilsalicilico\r",
+      //     _id_pa2: 375,
+      //     nome_principio_ativo2: "Captopril\r",
+      //     grau_intera: "Moderada",
+      //     inicio_intera: "Não especificado",
+      //     efeito_intera: "Diminui resposta anti-hipertensiva",
+      //     recomend_intera: "Monitorar pressão arterial.",
+      //     referencia:
+      //       "Guia de interações medicamentosas - Hospital das Clínicas / Universidade Federal de Goiás",
+      //     inputs_01: [
+      //       {
+      //         param: 3,
+      //         tipo: "Medicamento",
+      //         nome_med: "Aas\r"
+      //       }
+      //     ],
+      //     inputs_02: [
+      //       {
+      //         param: 1210,
+      //         tipo: "Medicamento",
+      //         nome_med: "Captopril\r"
+      //       },
+      //       {
+      //         param: 1210,
+      //         tipo: "Medicamento",
+      //         nome_med: "Captopril\r"
+      //       },
+      //       {
+      //         param: 1210,
+      //         tipo: "Medicamento",
+      //         nome_med: "Captopril\r"
+      //       }
+      //     ]
+      //   }
     };
   },
-  methods: {},
+  created() {
+    console.log(axios);
+
+    const viewInteracao = this;
+    viewInteracao.axios = axios;
+    viewInteracao.axios
+      .get("http://127.0.0.1:3000/v1/medicamento/")
+      .then(res => {
+        // debugger;
+        viewInteracao.listMed = res.data;
+        console.log(res.data);
+        viewInteracao.setListMed();
+      });
+
+    viewInteracao.axios
+      .get("http://127.0.0.1:3000/v1/princAtivo/")
+      .then(res => {
+        viewInteracao.listPrin = res.data;
+        console.log(res.data);
+      });
+  },
+  methods: {
+    setListMed: function() {
+      let elems_complete = this.$refs.autocomplete;
+      let instances_complete = M.Autocomplete.getInstance(elems_complete);
+      let list = {};
+      this.listMed.map(line => {
+        list[line.nome] = null;
+      });
+      // debugger;
+      instances_complete.updateData(list);
+    }
+  },
   mounted() {
+    const viewInteracao = this;
+
     // Inicializa expanção das interações
     let opt = {
       onOpenStart: function(e) {
@@ -120,6 +177,50 @@ export default {
     };
     var elems = document.querySelectorAll(".collapsible");
     var instances = M.Collapsible.init(elems, opt);
+
+    let options = {
+      onAutocomplete: function(evt) {
+        let selected = viewInteracao.listMed.find(line => {
+          let nome = line.nome.replace("\r", "");
+          return nome == evt;
+        });
+        viewInteracao.selectedItem.push(selected);
+        // debugger;
+      }
+    };
+
+    let elems_complete = document.querySelector("#autocomplete-input");
+    let instances_complete = M.Autocomplete.init(elems_complete, options);
+  },
+  computed: {
+    dataInt: {
+      get() {
+        debugger;
+        let viewInteracao = this;
+        if (viewInteracao.selectedItem.length < 2) {
+          return [];
+        }
+        viewInteracao.axios
+          .post("http://127.0.0.1:3000/v1/interacao/", {
+            interacao: [
+              { id: "485", tipo: "Principio" },
+              { id: "3", tipo: "Medicamento" },
+              { id: "1210", tipo: "Medicamento" },
+              { id: "5234", tipo: "Medicamento" },
+              { id: "1880", tipo: "Principio" },
+              { id: "123", tipo: "Medicamento" },
+              { id: "321", tipo: "Medicamento" },
+              { id: "111", tipo: "Principio" }
+            ]
+          })
+          .then(res => {
+            debugger;
+            // viewInteracao.listPrin = res.data;
+            console.log(res.data);
+            return res.data;
+          });
+      }
+    }
   }
 };
 </script>
@@ -173,6 +274,7 @@ export default {
 .collapsible.popout > li.active {
   margin-top: 0px;
 }
+
 /* .listInt {
   border: none !important;
   box-shadow: none !important;

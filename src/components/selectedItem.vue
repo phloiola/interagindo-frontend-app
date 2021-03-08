@@ -5,7 +5,7 @@
     <div class="blockOverflow">
       <div class="moveScroll" ref="q">
         <!-- <p class="title truncate scrolling"> -->
-        <p class="title truncate scrolling" ref="p">
+        <p class="title truncate scrolling destacaText" ref="p">
           {{ dados.nome }}
         </p>
       </div>
@@ -65,5 +65,9 @@ export default {
   left: 0%;
   width: 85%;
   transition: left 4s, width 4s ease;
+}
+
+.destacaText {
+  font-weight: bold;
 }
 </style>

@@ -75,6 +75,7 @@ export default {
       msg: "Welcome to Your Vue.js App"
     };
   },
+  created() {},
   mounted() {
     M.AutoInit();
     console.log("Passou");
