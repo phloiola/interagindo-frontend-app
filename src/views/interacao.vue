@@ -1,7 +1,30 @@
 <template>
   <div id="interacao">
-    Interações
     <div class="row">
+      <div class="spaceInput">
+        <div class="col s12 m8 l6 radioalign">
+          <label class="col s6">
+            <input
+              class="with-gap"
+              name="group1"
+              type="radio"
+              value="M"
+              v-model="rb_check_list"
+            />
+            <span>Medicamento</span>
+          </label>
+          <label class="col s6">
+            <input
+              class="with-gap"
+              name="group1"
+              type="radio"
+              value="P"
+              v-model="rb_check_list"
+            />
+            <span>Princípio Ativo</span>
+          </label>
+        </div>
+      </div>
       <div class="col s12">
         <div class="row">
           <div class="input-field col s12">
@@ -88,6 +111,7 @@ export default {
   data() {
     return {
       axios: {},
+      rb_check_list: "M",
       listMed: [],
       listPrin: [],
       selectedItem: [],
@@ -141,7 +165,7 @@ export default {
         // debugger;
         viewInteracao.listMed = res.data;
         console.log(res.data);
-        viewInteracao.setListMed();
+        viewInteracao.defineListSearch();
       });
 
     viewInteracao.axios
@@ -152,15 +176,30 @@ export default {
       });
   },
   methods: {
-    setListMed: function() {
+    defineListSearch: function() {
       let elems_complete = this.$refs.autocomplete;
       let instances_complete = M.Autocomplete.getInstance(elems_complete);
       let list = {};
-      this.listMed.map(line => {
-        list[line.nome] = null;
-      });
-      // debugger;
-      instances_complete.updateData(list);
+
+      // Função com async/await para aguardar os dados
+      const updateList = async () => {
+        if (this.rb_check_med) {
+          await Promise.all(
+            this.listMed.map(line => {
+              list[line.nome] = null;
+            })
+          );
+        } else {
+          await Promise.all(
+            this.listPrin.map(line => {
+              list[line.nome] = null;
+            })
+          );
+        }
+
+        instances_complete.updateData(list);
+      };
+      updateList();
     }
   },
   mounted() {
@@ -186,6 +225,10 @@ export default {
         });
         viewInteracao.selectedItem.push(selected);
         // debugger;
+      },
+      minLength: 3,
+      sortFunction: function(a, b, inputString) {
+        return a.indexOf(inputString) - b.indexOf(inputString);
       }
     };
 
@@ -329,6 +372,19 @@ table {
   word-break: break-all;
 }
 
+.spaceInput {
+  margin-left: 3rem;
+}
+
+@media only screen and (max-width: 600px) {
+  .spaceInput {
+    margin-left: 0rem;
+  }
+}
+
+.radioalign {
+  padding-left: 0;
+}
 .teste45 {
   width: 45%;
 }

@@ -5,13 +5,13 @@
         <div class="nav-brand">
           <a href="#" class="brand-logo center alingLogo">
             <div class="valign-wrapper">
-              <img
+              <!-- <img
                 src="./assets/logo-novo.png"
                 class=""
                 alt=""
                 width="50em"
                 height="44em"
-              />
+              /> -->
               <span>Interagindo</span>
             </div>
           </a>
@@ -114,5 +114,16 @@ export default {
   /* The alpha value allows the text and background color
    of the button to still show through. */
   background-color: rgba(58, 83, 224, 0.65);
+}
+
+[type="radio"]:checked + span:after,
+[type="radio"].with-gap:checked + span:after {
+  background-color: #3584c5;
+}
+
+[type="radio"]:checked + span:after,
+[type="radio"].with-gap:checked + span:before,
+[type="radio"].with-gap:checked + span:after {
+  border: 2px solid #3584c5;
 }
 </style>
