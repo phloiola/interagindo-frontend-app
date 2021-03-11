@@ -129,7 +129,7 @@ export default {
 <style scoped>
 .listInt {
   border: none !important;
-  box-shadow: none !important;
+  /* box-shadow: none !important; */
 }
 .collapsible tr {
   border: none;

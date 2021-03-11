@@ -81,9 +81,9 @@
 
       <ul class="collapsible col s12 m6 popout clear">
         <itemInteracao
-          v-for="(line, index) in selectedItem"
+          v-for="(line, index) in dataInt"
           :key="index"
-          :dados="dataInt"
+          :dados="line"
         />
         <!-- <itemInteracao :dados="dataInt" />
         <itemInteracao :dados="dataInt" /> -->
@@ -116,7 +116,8 @@ export default {
       listPrin: [],
       selectedItem: [],
       buscaMedicamento: ""
-      //   dataInt: {
+      // dataInt: [
+      //   {
       //     _id_pa1: 50,
       //     nome_principio_ativo1: "Acido Acetilsalicilico\r",
       //     _id_pa2: 375,
@@ -131,27 +132,64 @@ export default {
       //       {
       //         param: 3,
       //         tipo: "Medicamento",
-      //         nome_med: "Aas\r"
-      //       }
+      //         nome_med: "Aas\r",
+      //       },
       //     ],
       //     inputs_02: [
       //       {
       //         param: 1210,
       //         tipo: "Medicamento",
-      //         nome_med: "Captopril\r"
+      //         nome_med: "Captopril\r",
       //       },
       //       {
       //         param: 1210,
       //         tipo: "Medicamento",
-      //         nome_med: "Captopril\r"
+      //         nome_med: "Captopril\r",
       //       },
       //       {
       //         param: 1210,
       //         tipo: "Medicamento",
-      //         nome_med: "Captopril\r"
-      //       }
-      //     ]
-      //   }
+      //         nome_med: "Captopril\r",
+      //       },
+      //     ],
+      //   },
+      //   {
+      //     _id_pa1: 50,
+      //     nome_principio_ativo1: "Acido Acetilsalicilico\r",
+      //     _id_pa2: 375,
+      //     nome_principio_ativo2: "Captopril\r",
+      //     grau_intera: "Moderada",
+      //     inicio_intera: "Não especificado",
+      //     efeito_intera: "Diminui resposta anti-hipertensiva",
+      //     recomend_intera: "Monitorar pressão arterial.",
+      //     referencia:
+      //       "Guia de interações medicamentosas - Hospital das Clínicas / Universidade Federal de Goiás",
+      //     inputs_01: [
+      //       {
+      //         param: 3,
+      //         tipo: "Medicamento",
+      //         nome_med: "Aas\r",
+      //       },
+      //     ],
+      //     inputs_02: [
+      //       {
+      //         param: 1210,
+      //         tipo: "Medicamento",
+      //         nome_med: "Captopril\r",
+      //       },
+      //       {
+      //         param: 1210,
+      //         tipo: "Medicamento",
+      //         nome_med: "Captopril\r",
+      //       },
+      //       {
+      //         param: 1210,
+      //         tipo: "Medicamento",
+      //         nome_med: "Captopril\r",
+      //       },
+      //     ],
+      //   },
+      // ],
     };
   },
   created() {
@@ -183,18 +221,26 @@ export default {
 
       // Função com async/await para aguardar os dados
       const updateList = async () => {
-        if (this.rb_check_med) {
-          await Promise.all(
-            this.listMed.map(line => {
-              list[line.nome] = null;
-            })
-          );
-        } else {
-          await Promise.all(
-            this.listPrin.map(line => {
-              list[line.nome] = null;
-            })
-          );
+        switch (this.rb_check_list) {
+          case "M":
+            // Get Lista de Medicamento
+            await Promise.all(
+              this.listMed.map(line => {
+                list[line.nome] = null;
+              })
+            );
+            break;
+
+          case "P":
+            // Get Lista de Principio ativo
+            await Promise.all(
+              this.listPrin.map(line => {
+                list[line.nome] = null;
+              })
+            );
+            break;
+          default:
+            break;
         }
 
         instances_complete.updateData(list);
@@ -235,16 +281,19 @@ export default {
     let elems_complete = document.querySelector("#autocomplete-input");
     let instances_complete = M.Autocomplete.init(elems_complete, options);
   },
-  computed: {
-    dataInt: {
-      get() {
-        debugger;
-        let viewInteracao = this;
-        if (viewInteracao.selectedItem.length < 2) {
-          return [];
-        }
-        viewInteracao.axios
-          .post("http://127.0.0.1:3000/v1/interacao/", {
+  asyncComputed: {
+    async dataInt() {
+      debugger;
+      let viewInteracao = this;
+      if (viewInteracao.selectedItem.length < 2) {
+        return [];
+      }
+      const arraySelected = [];
+
+      const searchIntera = async Selected => {
+        let data = await viewInteracao.axios.post(
+          "http://127.0.0.1:3000/v1/interacao/",
+          {
             interacao: [
               { id: "485", tipo: "Principio" },
               { id: "3", tipo: "Medicamento" },
@@ -255,14 +304,22 @@ export default {
               { id: "321", tipo: "Medicamento" },
               { id: "111", tipo: "Principio" }
             ]
-          })
-          .then(res => {
-            debugger;
-            // viewInteracao.listPrin = res.data;
-            console.log(res.data);
-            return res.data;
-          });
-      }
+          }
+        );
+        // .then((res) => {
+        //   debugger;
+        //   // viewInteracao.listPrin = res.data;
+        //   console.log(res.data);
+        //   return res.data;
+        // });
+        console.log(data.data);
+        return data.data;
+      };
+      let dataIntera = [];
+      return (dataIntera = await searchIntera(arraySelected));
+      // debugger;
+      // console.log(dataIntera);
+      // return dataIntera;
     }
   }
 };

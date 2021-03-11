@@ -11,6 +11,9 @@ import "materialize-css/dist/css/materialize.css";
 // Recomendation of babeljs (https://babeljs.io/docs/en/babel-polyfill)
 import "core-js/stable"; // only stable feature also is possible with only `core-js`
 import "regenerator-runtime/runtime"; // To ensure that regeneratorRuntime is defined globally
+import AsyncComputed from "vue-async-computed";
+
+Vue.use(AsyncComputed);
 
 new Vue({
   el: "#app",
