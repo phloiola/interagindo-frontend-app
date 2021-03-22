@@ -1,5 +1,5 @@
 <template>
-  <li class="listInt ">
+  <li class="listInt">
     <div class="collapsible-header clear lowrisk waves-effect waves-brown">
       <i class="material-icons yellow-text alteraIcon">warning</i>
 
@@ -62,7 +62,7 @@ export default {
     return {};
   },
   props: {
-    dados: Object
+    dados: Object,
   },
   methods: {},
   mounted() {
@@ -72,8 +72,8 @@ export default {
   },
   computed: {
     listMed: {
-      get: function() {
-        let input_01_clean = this.dados.inputs_01.filter(line => {
+      get: function () {
+        let input_01_clean = this.dados.inputs_01.filter((line) => {
           if (!!line.nome_med) {
             return true;
           } else {
@@ -81,7 +81,7 @@ export default {
           }
         });
 
-        let input_02_clean = this.dados.inputs_02.filter(line => {
+        let input_02_clean = this.dados.inputs_02.filter((line) => {
           if (!!line.nome_med) {
             return true;
           } else {
@@ -92,7 +92,7 @@ export default {
         if (input_01_clean.length < input_02_clean.length) {
           let input_02 = this.dados.inputs_02.map((line, i) => {
             let output = {
-              input_02: line.nome_med
+              input_02: line.nome_med,
             };
 
             if (!!input_01_clean[i]) {
@@ -107,7 +107,7 @@ export default {
         } else {
           let input_01 = this.dados.inputs_01.map((line, i) => {
             let output = {
-              input_01: line.nome_med
+              input_01: line.nome_med,
             };
 
             if (!!input_02_clean[i]) {
@@ -120,15 +120,16 @@ export default {
           });
           return input_01;
         }
-      }
-    }
-  }
+      },
+    },
+  },
 };
 </script>
 
 <style scoped>
 .listInt {
   border: none !important;
+  border-radius: 10px;
   /* box-shadow: none !important; */
 }
 .collapsible tr {
@@ -143,6 +144,7 @@ export default {
 .lowrisk {
   border-bottom: 1px solid #f3ef03 !important;
   box-shadow: 0 1px 0 0 #f5f242 !important;
+  border-radius: 10px;
 }
 .moderaterisk {
   border-bottom: 1px solid #daa20a !important;

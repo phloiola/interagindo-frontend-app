@@ -56,7 +56,7 @@
           :key="line.id"
           :dados="{
             nome: line.nome,
-            tipo: line.tipo
+            tipo: line.tipo,
           }"
           @eventDelMed="deletaMed($event)"
         />
@@ -101,7 +101,7 @@ export default {
   name: "interacao",
   components: {
     selectedItem,
-    itemInteracao
+    itemInteracao,
   },
   props: {
     // columns: Array,
@@ -115,7 +115,7 @@ export default {
       listMed: [],
       listPrin: [],
       selectedItem: [],
-      buscaMedicamento: ""
+      buscaMedicamento: "",
       // dataInt: [
       //   {
       //     _id_pa1: 50,
@@ -199,7 +199,7 @@ export default {
     viewInteracao.axios = axios;
     viewInteracao.axios
       .get("http://127.0.0.1:3000/v1/medicamento/")
-      .then(res => {
+      .then((res) => {
         // debugger;
         viewInteracao.listMed = res.data;
         console.log(res.data);
@@ -208,13 +208,13 @@ export default {
 
     viewInteracao.axios
       .get("http://127.0.0.1:3000/v1/princAtivo/")
-      .then(res => {
+      .then((res) => {
         viewInteracao.listPrin = res.data;
         console.log(res.data);
       });
   },
   methods: {
-    defineListSearch: function() {
+    defineListSearch: function () {
       let elems_complete = this.$refs.autocomplete;
       let instances_complete = M.Autocomplete.getInstance(elems_complete);
       let list = {};
@@ -225,7 +225,7 @@ export default {
           case "M":
             // Get Lista de Medicamento
             await Promise.all(
-              this.listMed.map(line => {
+              this.listMed.map((line) => {
                 list[line.nome] = null;
               })
             );
@@ -234,7 +234,7 @@ export default {
           case "P":
             // Get Lista de Principio ativo
             await Promise.all(
-              this.listPrin.map(line => {
+              this.listPrin.map((line) => {
                 list[line.nome] = null;
               })
             );
@@ -246,36 +246,37 @@ export default {
         instances_complete.updateData(list);
       };
       updateList();
-    }
+    },
   },
   mounted() {
     const viewInteracao = this;
 
     // Inicializa expanção das interações
     let opt = {
-      onOpenStart: function(e) {
+      onOpenStart: function (e) {
         debugger;
       },
-      onCloseStart: function(e) {
+      onCloseStart: function (e) {
         debugger;
-      }
+      },
     };
     var elems = document.querySelectorAll(".collapsible");
     var instances = M.Collapsible.init(elems, opt);
 
     let options = {
-      onAutocomplete: function(evt) {
-        let selected = viewInteracao.listMed.find(line => {
+      onAutocomplete: function (evt) {
+        let selected = viewInteracao.listMed.find((line) => {
           let nome = line.nome.replace("\r", "");
           return nome == evt;
         });
         viewInteracao.selectedItem.push(selected);
+        this.close();
         // debugger;
       },
       minLength: 3,
-      sortFunction: function(a, b, inputString) {
+      sortFunction: function (a, b, inputString) {
         return a.indexOf(inputString) - b.indexOf(inputString);
-      }
+      },
     };
 
     let elems_complete = document.querySelector("#autocomplete-input");
@@ -288,22 +289,17 @@ export default {
       if (viewInteracao.selectedItem.length < 2) {
         return [];
       }
-      const arraySelected = [];
+      // const arraySelected = [];
 
-      const searchIntera = async Selected => {
+      const arraySelected = viewInteracao.selectedItem.map((line) => {
+        return { id: line.id, tipo: line.tipo };
+      });
+
+      const searchIntera = async (Selected) => {
         let data = await viewInteracao.axios.post(
           "http://127.0.0.1:3000/v1/interacao/",
           {
-            interacao: [
-              { id: "485", tipo: "Principio" },
-              { id: "3", tipo: "Medicamento" },
-              { id: "1210", tipo: "Medicamento" },
-              { id: "5234", tipo: "Medicamento" },
-              { id: "1880", tipo: "Principio" },
-              { id: "123", tipo: "Medicamento" },
-              { id: "321", tipo: "Medicamento" },
-              { id: "111", tipo: "Principio" }
-            ]
+            interacao: arraySelected,
           }
         );
         // .then((res) => {
@@ -320,8 +316,8 @@ export default {
       // debugger;
       // console.log(dataIntera);
       // return dataIntera;
-    }
-  }
+    },
+  },
 };
 </script>
 
