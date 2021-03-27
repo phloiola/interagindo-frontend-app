@@ -5,13 +5,13 @@
 
       <div class="row clearSpace">
         <table class="col s12 m12 l12 xl12">
-          <thead>
+          <thead class="center">
             <tr>
-              <th class="limpaTable center teste45">
+              <th class="limpaTable center ocupa45">
                 {{ dados.nome_principio_ativo1 }}
               </th>
-              <th class="limpaTable center teste10">X</th>
-              <th class="limpaTable center teste45">
+              <th class="limpaTable center ocupa10">X</th>
+              <th class="limpaTable center ocupa45">
                 {{ dados.nome_principio_ativo2 }}
               </th>
             </tr>
@@ -30,7 +30,7 @@
           </tbody>
         </table>
 
-        <p class="col s12 m12 l12 center">Ler mais</p>
+        <p class="col s12 m12 l12 center blockHeader">Ler mais</p>
       </div>
     </div>
 
@@ -62,7 +62,7 @@ export default {
     return {};
   },
   props: {
-    dados: Object,
+    dados: Object
   },
   methods: {},
   mounted() {
@@ -72,8 +72,8 @@ export default {
   },
   computed: {
     listMed: {
-      get: function () {
-        let input_01_clean = this.dados.inputs_01.filter((line) => {
+      get: function() {
+        let input_01_clean = this.dados.inputs_01.filter(line => {
           if (!!line.nome_med) {
             return true;
           } else {
@@ -81,7 +81,7 @@ export default {
           }
         });
 
-        let input_02_clean = this.dados.inputs_02.filter((line) => {
+        let input_02_clean = this.dados.inputs_02.filter(line => {
           if (!!line.nome_med) {
             return true;
           } else {
@@ -92,7 +92,7 @@ export default {
         if (input_01_clean.length < input_02_clean.length) {
           let input_02 = this.dados.inputs_02.map((line, i) => {
             let output = {
-              input_02: line.nome_med,
+              input_02: line.nome_med
             };
 
             if (!!input_01_clean[i]) {
@@ -107,7 +107,7 @@ export default {
         } else {
           let input_01 = this.dados.inputs_01.map((line, i) => {
             let output = {
-              input_01: line.nome_med,
+              input_01: line.nome_med
             };
 
             if (!!input_02_clean[i]) {
@@ -120,9 +120,9 @@ export default {
           });
           return input_01;
         }
-      },
-    },
-  },
+      }
+    }
+  }
 };
 </script>
 
@@ -171,6 +171,7 @@ export default {
 .clearSpace {
   padding: 0;
   margin: 0;
+  /* width: 100vh; */
 }
 .clearSpace > p {
   padding: 0;
@@ -194,5 +195,18 @@ export default {
 
 .title-div {
   padding-top: 0px !important;
+}
+
+.ocupa45 {
+  padding: 0;
+  width: 45vh;
+}
+.ocupa10 {
+  padding: 0;
+  width: 10vh;
+}
+
+.blockHeader {
+  margin-left: 10px !important;
 }
 </style>

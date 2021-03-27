@@ -10,6 +10,7 @@
               type="radio"
               value="M"
               v-model="rb_check_list"
+              @change="defineListSearch"
             />
             <span>Medicamento</span>
           </label>
@@ -20,6 +21,7 @@
               type="radio"
               value="P"
               v-model="rb_check_list"
+              @change="defineListSearch"
             />
             <span>Princípio Ativo</span>
           </label>
@@ -52,11 +54,13 @@
     <div class="row">
       <ul class="collection col s12 m6 clear">
         <selectedItem
-          v-for="line in selectedItem"
+          v-for="(line, index) in selectedItem"
           :key="line.id"
           :dados="{
+            id: line.id,
             nome: line.nome,
             tipo: line.tipo,
+            index: index
           }"
           @eventDelMed="deletaMed($event)"
         />
@@ -85,6 +89,12 @@
           :key="index"
           :dados="line"
         />
+        <p
+          class="flow-text center"
+          v-if="selectedItem.length > 1 && dataInt.length == 0"
+        >
+          Não foram localizados interações 😅
+        </p>
         <!-- <itemInteracao :dados="dataInt" />
         <itemInteracao :dados="dataInt" /> -->
       </ul>
@@ -101,7 +111,7 @@ export default {
   name: "interacao",
   components: {
     selectedItem,
-    itemInteracao,
+    itemInteracao
   },
   props: {
     // columns: Array,
@@ -115,7 +125,7 @@ export default {
       listMed: [],
       listPrin: [],
       selectedItem: [],
-      buscaMedicamento: "",
+      buscaMedicamento: ""
       // dataInt: [
       //   {
       //     _id_pa1: 50,
@@ -199,7 +209,7 @@ export default {
     viewInteracao.axios = axios;
     viewInteracao.axios
       .get("http://127.0.0.1:3000/v1/medicamento/")
-      .then((res) => {
+      .then(res => {
         // debugger;
         viewInteracao.listMed = res.data;
         console.log(res.data);
@@ -208,13 +218,13 @@ export default {
 
     viewInteracao.axios
       .get("http://127.0.0.1:3000/v1/princAtivo/")
-      .then((res) => {
+      .then(res => {
         viewInteracao.listPrin = res.data;
         console.log(res.data);
       });
   },
   methods: {
-    defineListSearch: function () {
+    defineListSearch: function() {
       let elems_complete = this.$refs.autocomplete;
       let instances_complete = M.Autocomplete.getInstance(elems_complete);
       let list = {};
@@ -225,7 +235,7 @@ export default {
           case "M":
             // Get Lista de Medicamento
             await Promise.all(
-              this.listMed.map((line) => {
+              this.listMed.map(line => {
                 list[line.nome] = null;
               })
             );
@@ -234,7 +244,7 @@ export default {
           case "P":
             // Get Lista de Principio ativo
             await Promise.all(
-              this.listPrin.map((line) => {
+              this.listPrin.map(line => {
                 list[line.nome] = null;
               })
             );
@@ -247,25 +257,38 @@ export default {
       };
       updateList();
     },
+    deletaMed: function(evt) {
+      this.selectedItem.splice(evt.dados.index, 1);
+      console.log(`passou`);
+    }
   },
   mounted() {
     const viewInteracao = this;
 
     // Inicializa expanção das interações
     let opt = {
-      onOpenStart: function (e) {
+      onOpenStart: function(e) {
         debugger;
       },
-      onCloseStart: function (e) {
+      onCloseStart: function(e) {
         debugger;
-      },
+      }
     };
     var elems = document.querySelectorAll(".collapsible");
     var instances = M.Collapsible.init(elems, opt);
 
     let options = {
-      onAutocomplete: function (evt) {
-        let selected = viewInteracao.listMed.find((line) => {
+      onAutocomplete: function(evt) {
+        debugger;
+
+        let listSelected = [];
+
+        listSelected =
+          viewInteracao.rb_check_list == "M" // M = Médicamento
+            ? viewInteracao.listMed
+            : viewInteracao.listPrin;
+
+        let selected = listSelected.find(line => {
           let nome = line.nome.replace("\r", "");
           return nome == evt;
         });
@@ -274,9 +297,9 @@ export default {
         // debugger;
       },
       minLength: 3,
-      sortFunction: function (a, b, inputString) {
+      sortFunction: function(a, b, inputString) {
         return a.indexOf(inputString) - b.indexOf(inputString);
-      },
+      }
     };
 
     let elems_complete = document.querySelector("#autocomplete-input");
@@ -291,15 +314,15 @@ export default {
       }
       // const arraySelected = [];
 
-      const arraySelected = viewInteracao.selectedItem.map((line) => {
+      const arraySelected = viewInteracao.selectedItem.map(line => {
         return { id: line.id, tipo: line.tipo };
       });
 
-      const searchIntera = async (Selected) => {
+      const searchIntera = async Selected => {
         let data = await viewInteracao.axios.post(
           "http://127.0.0.1:3000/v1/interacao/",
           {
-            interacao: arraySelected,
+            interacao: arraySelected
           }
         );
         // .then((res) => {
@@ -312,12 +335,19 @@ export default {
         return data.data;
       };
       let dataIntera = [];
-      return (dataIntera = await searchIntera(arraySelected));
+
+      try {
+        dataIntera = await searchIntera(arraySelected);
+      } catch (error) {
+        dataIntera = [];
+      }
+
+      return dataIntera;
       // debugger;
       // console.log(dataIntera);
       // return dataIntera;
-    },
-  },
+    }
+  }
 };
 </script>
 

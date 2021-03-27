@@ -12,7 +12,7 @@
     </div>
 
     <p>{{ dados.tipo }}</p>
-    <a href="#" class="secondary-content">
+    <a href="#" class="secondary-content" @click="emitEventDelete">
       <i class="material-icons red-text text-darken-4">remove_circle</i></a
     >
     <hr />
@@ -34,6 +34,10 @@ export default {
       } else {
         this.$refs.p.classList.remove("scrolling");
       }
+    },
+    emitEventDelete: function(evt) {
+      evt.preventDefault();
+      this.$emit("eventDelMed", { dados: this.dados, component: this });
     }
   },
   mounted() {
