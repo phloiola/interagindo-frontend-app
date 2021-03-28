@@ -1,7 +1,12 @@
 <template>
   <li class="listInt">
-    <div class="collapsible-header clear lowrisk waves-effect waves-brown">
-      <i class="material-icons yellow-text alteraIcon">warning</i>
+    <div
+      class="collapsible-header clear waves-effect waves-brown"
+      :class="getClassRisk()"
+    >
+      <i class="material-icons alteraIcon" :class="getClassRiskColor()"
+        >warning</i
+      >
 
       <div class="row clearSpace">
         <table class="col s12 m12 l12 xl12">
@@ -64,7 +69,46 @@ export default {
   props: {
     dados: Object
   },
-  methods: {},
+  methods: {
+    getClassRisk: function() {
+      let className = "";
+      switch (this.dados.grau_intera) {
+        case "Leve":
+          className = "lowrisk";
+          break;
+        case "Moderada":
+          className = "moderaterisk";
+          break;
+        case "Grave":
+          className = "highrisk";
+          break;
+        default:
+          className = "nonerisk";
+          break;
+      }
+      return className;
+    },
+    getClassRiskColor: function() {
+      let className = "gray-text";
+      switch (this.dados.grau_intera) {
+        case "Leve":
+          className = "yellow-text";
+          // className = "yellow-text";
+          break;
+        case "Moderada":
+          className = "amber-text amber-lighten-2";
+          // className = "orange-text";
+          break;
+        case "Grave":
+          className = "red-text text-darken-4";
+          break;
+        default:
+          className = "gray-text";
+          break;
+      }
+      return className;
+    }
+  },
   mounted() {
     // if (this.$refs.p.scrollWidth > this.$refs.p.offsetWidth) {
     //   this.$refs.p.classList.add("scrolling");
@@ -143,21 +187,24 @@ export default {
 }
 .lowrisk {
   border-bottom: 1px solid #f3ef03 !important;
-  box-shadow: 0 1px 0 0 #f5f242 !important;
+  box-shadow: 0 2px 0 0 #f5f242 !important;
   border-radius: 10px;
 }
 .moderaterisk {
   border-bottom: 1px solid #daa20a !important;
-  box-shadow: 0 1px 0 0 #f7b03e !important;
+  box-shadow: 0 2px 0 0 #f7b03e !important;
+  border-radius: 10px;
 }
 .highrisk {
   border-bottom: 1px solid #ac0404 !important;
-  box-shadow: 0 1px 0 0 #f00505 !important;
+  box-shadow: 0 2px 0 0 #f00505 !important;
+  border-radius: 10px;
 }
 
 .nonerisk {
   border-bottom: 1px solid #9a9a9a !important;
-  box-shadow: 0 1px 0 0 #9a9a9a !important;
+  box-shadow: 0 2px 0 0 #9a9a9a !important;
+  border-radius: 10px;
 }
 
 .limpaTable {

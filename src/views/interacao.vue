@@ -43,9 +43,7 @@
               class="autocomplete-content dropdown-content autocompleteCust"
               tabindex="0"
             ></ul> -->
-            <label for="autocomplete-input"
-              >Nome do medicamento ou princípio ativo</label
-            >
+            <label for="autocomplete-input">{{ this.labelInput }}</label>
           </div>
         </div>
       </div>
@@ -91,10 +89,17 @@
         />
         <p
           class="flow-text center"
+          v-if="selectedItem.length == 1 && dataInt.length == 0"
+        >
+          Informe mais um medicamento 😄
+        </p>
+        <p
+          class="flow-text center"
           v-if="selectedItem.length > 1 && dataInt.length == 0"
         >
-          Não foram localizados interações 😅
+          Nenhuma interação localizada 😅
         </p>
+
         <!-- <itemInteracao :dados="dataInt" />
         <itemInteracao :dados="dataInt" /> -->
       </ul>
@@ -122,84 +127,11 @@ export default {
     return {
       axios: {},
       rb_check_list: "M",
+      labelInput: "Nome do medicamento",
       listMed: [],
       listPrin: [],
       selectedItem: [],
       buscaMedicamento: ""
-      // dataInt: [
-      //   {
-      //     _id_pa1: 50,
-      //     nome_principio_ativo1: "Acido Acetilsalicilico\r",
-      //     _id_pa2: 375,
-      //     nome_principio_ativo2: "Captopril\r",
-      //     grau_intera: "Moderada",
-      //     inicio_intera: "Não especificado",
-      //     efeito_intera: "Diminui resposta anti-hipertensiva",
-      //     recomend_intera: "Monitorar pressão arterial.",
-      //     referencia:
-      //       "Guia de interações medicamentosas - Hospital das Clínicas / Universidade Federal de Goiás",
-      //     inputs_01: [
-      //       {
-      //         param: 3,
-      //         tipo: "Medicamento",
-      //         nome_med: "Aas\r",
-      //       },
-      //     ],
-      //     inputs_02: [
-      //       {
-      //         param: 1210,
-      //         tipo: "Medicamento",
-      //         nome_med: "Captopril\r",
-      //       },
-      //       {
-      //         param: 1210,
-      //         tipo: "Medicamento",
-      //         nome_med: "Captopril\r",
-      //       },
-      //       {
-      //         param: 1210,
-      //         tipo: "Medicamento",
-      //         nome_med: "Captopril\r",
-      //       },
-      //     ],
-      //   },
-      //   {
-      //     _id_pa1: 50,
-      //     nome_principio_ativo1: "Acido Acetilsalicilico\r",
-      //     _id_pa2: 375,
-      //     nome_principio_ativo2: "Captopril\r",
-      //     grau_intera: "Moderada",
-      //     inicio_intera: "Não especificado",
-      //     efeito_intera: "Diminui resposta anti-hipertensiva",
-      //     recomend_intera: "Monitorar pressão arterial.",
-      //     referencia:
-      //       "Guia de interações medicamentosas - Hospital das Clínicas / Universidade Federal de Goiás",
-      //     inputs_01: [
-      //       {
-      //         param: 3,
-      //         tipo: "Medicamento",
-      //         nome_med: "Aas\r",
-      //       },
-      //     ],
-      //     inputs_02: [
-      //       {
-      //         param: 1210,
-      //         tipo: "Medicamento",
-      //         nome_med: "Captopril\r",
-      //       },
-      //       {
-      //         param: 1210,
-      //         tipo: "Medicamento",
-      //         nome_med: "Captopril\r",
-      //       },
-      //       {
-      //         param: 1210,
-      //         tipo: "Medicamento",
-      //         nome_med: "Captopril\r",
-      //       },
-      //     ],
-      //   },
-      // ],
     };
   },
   created() {
@@ -207,8 +139,9 @@ export default {
 
     const viewInteracao = this;
     viewInteracao.axios = axios;
+    debugger;
     viewInteracao.axios
-      .get("http://127.0.0.1:3000/v1/medicamento/")
+      .get(viewInteracao.UrlServ() + "/medicamento/")
       .then(res => {
         // debugger;
         viewInteracao.listMed = res.data;
@@ -217,7 +150,7 @@ export default {
       });
 
     viewInteracao.axios
-      .get("http://127.0.0.1:3000/v1/princAtivo/")
+      .get(viewInteracao.UrlServ() + "/princAtivo/")
       .then(res => {
         viewInteracao.listPrin = res.data;
         console.log(res.data);
@@ -225,14 +158,23 @@ export default {
   },
   methods: {
     defineListSearch: function() {
-      let elems_complete = this.$refs.autocomplete;
-      let instances_complete = M.Autocomplete.getInstance(elems_complete);
+      let viewInteracao = this;
+      let options = {
+        onAutocomplete: viewInteracao.onAutocomplete,
+        minLength: 3,
+        sortFunction: viewInteracao.sortFunction
+      };
+
+      let elems_complete = viewInteracao.$refs.autocomplete;
+      let instances_complete = M.Autocomplete.init(elems_complete, options);
+
       let list = {};
 
       // Função com async/await para aguardar os dados
       const updateList = async () => {
         switch (this.rb_check_list) {
           case "M":
+            this.labelInput = "Nome do medicamento";
             // Get Lista de Medicamento
             await Promise.all(
               this.listMed.map(line => {
@@ -242,6 +184,7 @@ export default {
             break;
 
           case "P":
+            this.labelInput = "Nome do princípio ativo";
             // Get Lista de Principio ativo
             await Promise.all(
               this.listPrin.map(line => {
@@ -260,6 +203,42 @@ export default {
     deletaMed: function(evt) {
       this.selectedItem.splice(evt.dados.index, 1);
       console.log(`passou`);
+    },
+    UrlServ: function() {
+      let urn = document.location.origin.split(":");
+      urn.splice(2, 1);
+      let url = urn.join(":") + ":3000/v1";
+      return url;
+    },
+    onAutocomplete: function(evt) {
+      //debugger;
+      let viewInteracao = this;
+
+      let listSelected = [];
+
+      listSelected =
+        viewInteracao.rb_check_list == "M" // M = Médicamento
+          ? viewInteracao.listMed
+          : viewInteracao.listPrin;
+
+      let selected = listSelected.find(line => {
+        let nome = line.nome.replace("\r", "");
+        return nome == evt;
+      });
+      viewInteracao.selectedItem.push(selected);
+
+      let instances_complete = M.Autocomplete.getInstance(
+        viewInteracao.$refs.autocomplete
+      );
+      // viewBula.selectedItem.push(selected);
+      instances_complete.close();
+
+      viewInteracao.$refs.autocomplete.nextElementSibling.nextElementSibling.removeAttribute(
+        "class"
+      );
+    },
+    sortFunction: function(a, b, inputString) {
+      return a.indexOf(inputString) - b.indexOf(inputString);
     }
   },
   mounted() {
@@ -268,38 +247,19 @@ export default {
     // Inicializa expanção das interações
     let opt = {
       onOpenStart: function(e) {
-        debugger;
+        //debugger;
       },
       onCloseStart: function(e) {
-        debugger;
+        //debugger;
       }
     };
     var elems = document.querySelectorAll(".collapsible");
     var instances = M.Collapsible.init(elems, opt);
 
     let options = {
-      onAutocomplete: function(evt) {
-        debugger;
-
-        let listSelected = [];
-
-        listSelected =
-          viewInteracao.rb_check_list == "M" // M = Médicamento
-            ? viewInteracao.listMed
-            : viewInteracao.listPrin;
-
-        let selected = listSelected.find(line => {
-          let nome = line.nome.replace("\r", "");
-          return nome == evt;
-        });
-        viewInteracao.selectedItem.push(selected);
-        this.close();
-        // debugger;
-      },
+      onAutocomplete: this.onAutocomplete,
       minLength: 3,
-      sortFunction: function(a, b, inputString) {
-        return a.indexOf(inputString) - b.indexOf(inputString);
-      }
+      sortFunction: this.sortFunction
     };
 
     let elems_complete = document.querySelector("#autocomplete-input");
@@ -307,7 +267,7 @@ export default {
   },
   asyncComputed: {
     async dataInt() {
-      debugger;
+      //debugger;
       let viewInteracao = this;
       if (viewInteracao.selectedItem.length < 2) {
         return [];
@@ -320,7 +280,7 @@ export default {
 
       const searchIntera = async Selected => {
         let data = await viewInteracao.axios.post(
-          "http://127.0.0.1:3000/v1/interacao/",
+          this.UrlServ() + "/interacao/",
           {
             interacao: arraySelected
           }
