@@ -64,6 +64,7 @@
 import M from "materialize-css";
 
 import profileNav from "./components/profileNav.vue";
+import axios from "axios";
 
 export default {
   name: "app",
@@ -75,21 +76,26 @@ export default {
       msg: "Welcome to Your Vue.js App"
     };
   },
-  created() {},
+  methods: {
+    UrlServ: function() {
+      let urn = document.location.origin.split(":");
+      urn.splice(2, 1);
+      let url = urn.join(":") + ":3000/v1";
+      return url;
+    }
+  },
+  created() {
+    const viewApp = this;
+    viewApp.axios = axios;
+
+    // antecipa busca de dados
+    // this.$store.dispatch("getListMed").then(res => {});
+    this.$store.dispatch("getListMedBula").then(res => {});
+    this.$store.dispatch("getListPrin").then(res => {});
+  },
   mounted() {
     M.AutoInit();
     console.log("Passou");
-
-    // // Inicializa expanção das interações
-    // document.addEventListener("DOMContentLoaded", function() {
-    //   var elems = document.querySelectorAll(".collapsible");
-    //   var instances = M.Collapsible.init(elems, options);
-    // });
-
-    // document.addEventListener("DOMContentLoaded", function () {
-    //   var elems = document.querySelectorAll(".sidenav");
-    //   var instances = M.Sidenav.init(elems, options);
-    // });
   }
 };
 </script>

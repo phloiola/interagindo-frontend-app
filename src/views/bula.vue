@@ -102,28 +102,26 @@ export default {
     return {
       axios: {},
       rb_check_list: "M",
-      listMed: [],
+      // listMed: [],
       selectedItem: [],
-      buscaMedicamento: "",
-      dataBula: { id: String, tipo: String, nome: String, bula: Array }
+      buscaMedicamento: ""
+      // dataBula: { id: String, tipo: String, nome: String, bula: Array }
     };
   },
   created() {
-    console.log(axios);
-
     const viewBula = this;
     viewBula.axios = axios;
 
-    viewBula.axios.get(viewBula.UrlServ() + "/medicamento/bula/").then(res => {
-      // debugger;
-      viewBula.listMed = res.data;
-      console.log(res.data);
+    this.$store.dispatch("getListMedBula").then(res => {
       viewBula.defineListSearch();
     });
+
+    // viewBula.listMed
+    // await dispatch("actionA");
+    // viewBula.defineListSearch();
   },
   methods: {
     defineListSearch: function() {
-      debugger;
       let viewBula = this;
       let options = {
         onAutocomplete: viewBula.onAutocomplete,
@@ -187,7 +185,6 @@ export default {
   mounted() {
     const viewBula = this;
 
-    debugger;
     let options = {
       onAutocomplete: this.onAutocomplete,
       minLength: 3,
@@ -238,6 +235,21 @@ export default {
       // debugger;
       // console.log(dataIntera);
       // return dataIntera;
+    }
+  },
+  computed: {
+    dataBula: {
+      get() {
+        return this.$store.state.dadosBula;
+      },
+      set(evt) {
+        this.$store.dispatch("setBula", evt);
+      }
+    },
+    listMed: {
+      get() {
+        return this.$store.state.listMedBula;
+      }
     }
   }
 };

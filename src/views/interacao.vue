@@ -89,13 +89,13 @@
         />
         <p
           class="flow-text center"
-          v-if="selectedItem.length == 1 && dataInt.length == 0"
+          v-if="selectedItem.length == 1 && countIntera == 0"
         >
           Informe mais um medicamento 😄
         </p>
         <p
           class="flow-text center"
-          v-if="selectedItem.length > 1 && dataInt.length == 0"
+          v-if="selectedItem.length > 1 && countIntera == 0"
         >
           Nenhuma interação localizada 😅
         </p>
@@ -128,33 +128,17 @@ export default {
       axios: {},
       rb_check_list: "M",
       labelInput: "Nome do medicamento",
-      listMed: [],
-      listPrin: [],
-      selectedItem: [],
+      // selectedItem: [],
       buscaMedicamento: ""
     };
   },
   created() {
-    console.log(axios);
-
     const viewInteracao = this;
     viewInteracao.axios = axios;
-    debugger;
-    viewInteracao.axios
-      .get(viewInteracao.UrlServ() + "/medicamento/")
-      .then(res => {
-        // debugger;
-        viewInteracao.listMed = res.data;
-        console.log(res.data);
-        viewInteracao.defineListSearch();
-      });
 
-    viewInteracao.axios
-      .get(viewInteracao.UrlServ() + "/princAtivo/")
-      .then(res => {
-        viewInteracao.listPrin = res.data;
-        console.log(res.data);
-      });
+    this.$store.dispatch("getListMed").then(res => {
+      viewInteracao.defineListSearch();
+    });
   },
   methods: {
     defineListSearch: function() {
@@ -168,26 +152,30 @@ export default {
       let elems_complete = viewInteracao.$refs.autocomplete;
       let instances_complete = M.Autocomplete.init(elems_complete, options);
 
-      let list = {};
+      if (!instances_complete) {
+        return;
+      }
 
       // Função com async/await para aguardar os dados
-      const updateList = async () => {
+      const updateList = async (viewInteracao, instances_complete) => {
+        let list = {};
+
         switch (this.rb_check_list) {
           case "M":
-            this.labelInput = "Nome do medicamento";
+            viewInteracao.labelInput = "Nome do medicamento";
             // Get Lista de Medicamento
             await Promise.all(
-              this.listMed.map(line => {
+              viewInteracao.listMed.map(line => {
                 list[line.nome] = null;
               })
             );
             break;
 
           case "P":
-            this.labelInput = "Nome do princípio ativo";
+            viewInteracao.labelInput = "Nome do princípio ativo";
             // Get Lista de Principio ativo
             await Promise.all(
-              this.listPrin.map(line => {
+              viewInteracao.listPrin.map(line => {
                 list[line.nome] = null;
               })
             );
@@ -198,10 +186,11 @@ export default {
 
         instances_complete.updateData(list);
       };
-      updateList();
+      updateList(viewInteracao, instances_complete);
     },
     deletaMed: function(evt) {
-      this.selectedItem.splice(evt.dados.index, 1);
+      this.$store.dispatch("delSelectedItem", evt.dados.index);
+      // this.selectedItem.splice(evt.dados.index, 1);
       console.log(`passou`);
     },
     UrlServ: function() {
@@ -225,7 +214,9 @@ export default {
         let nome = line.nome.replace("\r", "");
         return nome == evt;
       });
-      viewInteracao.selectedItem.push(selected);
+
+      this.$store.dispatch("addSelectedItem", selected);
+      // viewInteracao.selectedItem.push(selected);
 
       let instances_complete = M.Autocomplete.getInstance(
         viewInteracao.$refs.autocomplete
@@ -267,12 +258,15 @@ export default {
   },
   asyncComputed: {
     async dataInt() {
-      //debugger;
       let viewInteracao = this;
+
       if (viewInteracao.selectedItem.length < 2) {
         return [];
       }
-      // const arraySelected = [];
+
+      if (!viewInteracao.axios.post) {
+        return [];
+      }
 
       const arraySelected = viewInteracao.selectedItem.map(line => {
         return { id: line.id, tipo: line.tipo };
@@ -301,11 +295,36 @@ export default {
       } catch (error) {
         dataIntera = [];
       }
-
+      viewInteracao.countIntera = dataIntera.length;
       return dataIntera;
       // debugger;
       // console.log(dataIntera);
       // return dataIntera;
+    }
+  },
+  computed: {
+    listMed: {
+      get() {
+        return this.$store.state.listMed;
+      }
+    },
+    listPrin: {
+      get() {
+        return this.$store.state.listPrin;
+      }
+    },
+    selectedItem: {
+      get() {
+        return this.$store.state.selectedItem;
+      }
+    },
+    countIntera: {
+      get() {
+        return this.$store.state.countIntera;
+      },
+      set(evt) {
+        this.$store.dispatch("setCountIntera", evt);
+      }
     }
   }
 };

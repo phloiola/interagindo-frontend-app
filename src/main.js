@@ -2,6 +2,9 @@ import Vue from "vue";
 import App from "./App.vue";
 import router from "./routers";
 
+// Importa Vuex
+import store from "./store";
+
 // Importa biblioteca CSS Materialize
 import "materialize-css/dist/css/materialize.min.css";
 import "materialize-css/dist/css/materialize.css";
@@ -13,10 +16,13 @@ import "core-js/stable"; // only stable feature also is possible with only `core
 import "regenerator-runtime/runtime"; // To ensure that regeneratorRuntime is defined globally
 import AsyncComputed from "vue-async-computed";
 
+// sync(store, router);
+
 Vue.use(AsyncComputed);
 
 new Vue({
   el: "#app",
   render: h => h(App),
-  router
+  router,
+  store
 });

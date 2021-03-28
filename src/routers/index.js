@@ -26,7 +26,7 @@ const router = new VueRouter({
     {
       name: "Home",
       path: "/",
-      redirect: "/bula"
+      redirect: "/interacao"
     }
   ]
 });
